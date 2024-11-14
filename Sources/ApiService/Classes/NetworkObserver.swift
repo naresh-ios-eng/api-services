@@ -5,15 +5,13 @@
 //  Created by Naresh on 14/11/24.
 //
 
-
-
 import Network
 import Combine
 import Network
 
-final class ConnectivityObserver: ConnectivityObservable {
+final class NetworkObserver: NetworkObservable {
     
-    static var shared: ConnectivityObservable = ConnectivityObserver()
+    static var shared: NetworkObservable = NetworkObserver()
     
     var networkStatusPublisher: AnyPublisher<Bool, Never> {
         networkStatus.eraseToAnyPublisher()

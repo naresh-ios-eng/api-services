@@ -9,7 +9,7 @@ import Foundation
 import Combine
 
 /// This protocol must be confirmed by an enum. Becase in an enum each case would corresponds to the api endpoint, for each endpoint (enum case) we have to provide the following information
-public protocol Routable {
+public protocol ApiRoutable {
     /// Api method
     var method: MethodType { get }
     /// The api endpoint
@@ -23,11 +23,11 @@ public protocol Routable {
     /// The parameters those we need to send in the api url.
     var queryParams: [String: String]? { get }
     /// This will build the api request
-    func urlRequest(enviroment: Enviroment) throws -> URLRequest
+    func urlRequest(enviroment: UrlConfigurable) throws -> URLRequest
 }
 
 // MARK: - Building Request -
-extension Routable {
+extension ApiRoutable {
     
     /// Setting the default headers those will get included in all api's
     var defaultHeaders: [String: String]? {
@@ -37,7 +37,7 @@ extension Routable {
     /// This function will build the api request from ApiRoute protocol
     /// - Parameter route: The api route which provide the network related information
     /// - Returns: URLRequest
-    func urlRequest(enviroment: Enviroment) throws -> URLRequest {
+    func urlRequest(enviroment: UrlConfigurable) throws -> URLRequest {
         
         /// Create the url from the base url & url endpoint first
         guard let url = URL(string: (enviroment.baseUrl + self.endPoint)) else {
@@ -94,7 +94,7 @@ extension Routable {
 
 #if DEBUG
 // MARK: - This enxtension contains some public function those are only available to test private members
-extension Routable {
+extension ApiRoutable {
     public func allHeadersClone() -> [String: String] {
         self.allHeaders()
     }

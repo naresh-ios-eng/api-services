@@ -12,6 +12,6 @@ public protocol ApiServicable {
     
     init(configuration: ApiConfiguration)
     
-    func dataTaskPublisher<T: Codable>(route: Routable, responseType: T.Type) -> AnyPublisher<T, SessionError>
+    func dataTaskPublisher<T: Codable>(route: ApiRoutable, responseType: T.Type) -> AnyPublisher<T, SessionError>
 
 }

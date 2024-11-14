@@ -1,5 +1,5 @@
 //
-//  SessionManager.swift
+//  ApiServiceManager.swift
 //
 //
 //  Created by Naresh on 14/11/24.
@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-final class SessionManager: NSObject, ApiServicable {
+final class ApiServiceManager: NSObject, ApiServicable {
 
     /// The shared session
     private(set) var session: URLSession
@@ -17,7 +17,7 @@ final class SessionManager: NSObject, ApiServicable {
     /// After one minute the api will return timeout error
     var timeout: TimeInterval = 60
     /// This enviroment must be fetched from the current scheme we are running. As of now we are hardcoding this.
-    var enviroment: Enviroment
+    var enviroment: UrlConfigurable
     /// If internet is not there then any api call happen then on connectivity it will call the api.
     var waitsForConnectivity: Bool = true
     /// variable for refreing the publisher.
@@ -43,7 +43,7 @@ final class SessionManager: NSObject, ApiServicable {
     ///   - route: The api route. Route will provide complete api detail like url, method, body, parameters etc. The route will build the urlRequest also.
     ///   - responseType: The type of response the particular route will return.
     /// - Returns: It will return a publisher that can publish the response or error.
-    public func dataTaskPublisher<T: Codable>(route: Routable, responseType: T.Type) -> AnyPublisher<T, SessionError> {
+    public func dataTaskPublisher<T: Codable>(route: ApiRoutable, responseType: T.Type) -> AnyPublisher<T, SessionError> {
         /// Let make the url request
         guard let urlRequest: URLRequest = try? route.urlRequest(enviroment: self.enviroment) else {
             /// As there is some issue while building the url request so let's return the fail publisher with session error invalidRequest
@@ -82,7 +82,7 @@ final class SessionManager: NSObject, ApiServicable {
     ///- route: The route from which we get this error
     ///- responseType: The response type we want to send.
     /// - Returns: Publisher with response type or error
-    private func handleUrlError<T: Codable>(error: URLError, route: Routable, responseType: T.Type) throws -> AnyPublisher<T, SessionError> {
+    private func handleUrlError<T: Codable>(error: URLError, route: ApiRoutable, responseType: T.Type) throws -> AnyPublisher<T, SessionError> {
         if error.code == .userAuthenticationRequired || error.code == .userCancelledAuthentication {
             //print("Error thrown at line ", #line, " error - ", urlError)
             /// The commented code in line number 89 must be umcomment in order to use the refresh token feature.
@@ -118,7 +118,7 @@ final class SessionManager: NSObject, ApiServicable {
     /// This function will map the error status code to the URLError and if there is not error then it will return the data
     /// - Parameter element: The output from the dataTaks upstream publisher
     /// - Returns: return data or throw error
-    private func handleData(element: URLSession.DataTaskPublisher.Output, route: Routable) throws -> Data {
+    private func handleData(element: URLSession.DataTaskPublisher.Output, route: ApiRoutable) throws -> Data {
         guard let response = element.response as? HTTPURLResponse else {
             //print("Error thrown at line ", #line, " resp - ", element.response)
             throw URLError(.badServerResponse)
@@ -141,7 +141,7 @@ final class SessionManager: NSObject, ApiServicable {
 
 // MARK: - These are the function used for writting unit test
 #if DEBUG
-extension SessionManager {
+extension ApiServiceManager {
     
     /// This function is required to set the timeout because while writting unit test it's not appropriate to wait for the actual time interval for each api
     /// - Parameter interval: The time interval
@@ -156,11 +156,11 @@ extension SessionManager {
     /// This function is created to test the handleData function
     /// - Parameter element: The output of URLSession's data task publisher
     /// - Returns: Data.
-    func handleDataClone(element: URLSession.DataTaskPublisher.Output, route: Routable) throws -> Data {
+    func handleDataClone(element: URLSession.DataTaskPublisher.Output, route: ApiRoutable) throws -> Data {
         try self.handleData(element: element, route: route)
     }
     
-    func handleUrlErrorClone<T: Codable>(urlError: URLError, route: Routable, responseType: T.Type) throws -> AnyPublisher<T, SessionError> {
+    func handleUrlErrorClone<T: Codable>(urlError: URLError, route: ApiRoutable, responseType: T.Type) throws -> AnyPublisher<T, SessionError> {
         try handleUrlError(error: urlError, route: route, responseType: responseType)
     }
 }

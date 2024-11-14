@@ -1,5 +1,5 @@
 //
-//  ConnectivityObservable.swift
+//  NetworkObservable.swift
 //
 //
 //  Created by Naresh on 14/11/24.
@@ -8,9 +8,9 @@
 import Network
 import Combine
 
-protocol ConnectivityObservable {
+protocol NetworkObservable {
     
-    static var shared: ConnectivityObservable { get }
+    static var shared: NetworkObservable { get }
     
     var networkStatusPublisher: AnyPublisher<Bool, Never> { get }
     
