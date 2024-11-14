@@ -9,7 +9,7 @@ import Foundation
 
 public final class ApiService {
         
-    static func apiServiceProvider(with configuration: ApiConfiguration) -> ApiServicable {
+    public static func apiServiceProvider(with configuration: ApiConfiguration) -> ApiServicable {
         
         return ApiServiceManager.init(configuration: configuration)
         
